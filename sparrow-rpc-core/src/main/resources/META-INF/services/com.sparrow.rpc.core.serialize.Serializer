@@ -1,0 +1,4 @@
+com.sparrow.rpc.core.serialize.impl.ObjectSerializer
+com.sparrow.rpc.core.serialize.impl.ObjectArraysSerializer
+com.sparrow.rpc.core.serialize.impl.RpcRequestSerializer
+com.sparrow.rpc.core.serialize.impl.HessianSerializer
