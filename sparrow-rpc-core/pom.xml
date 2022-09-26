@@ -21,6 +21,10 @@
             <artifactId>sparrow-rpc-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.sparrow</groupId>
+            <artifactId>sparrow-rpc-nameserver</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.caucho</groupId>
             <artifactId>hessian</artifactId>
         </dependency>
