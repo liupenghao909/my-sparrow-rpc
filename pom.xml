@@ -24,6 +24,7 @@
         <lombook-version>1.18.8</lombook-version>
         <slf4j.version>1.7.25</slf4j.version>
         <jackson-version>2.13.3</jackson-version>
+        <cglib-version>3.3.0</cglib-version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -86,6 +87,11 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
                 <version>${jackson-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib</artifactId>
+                <version>${cglib-version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

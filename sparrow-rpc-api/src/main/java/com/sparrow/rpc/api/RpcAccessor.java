@@ -21,6 +21,16 @@ public interface RpcAccessor extends Closeable {
     }
 
     /**
+     * 获取远程服务代理类
+     *
+     * @param metaInfo 服务元信息
+     * @param clazz    接口
+     * @param <T>      服务类型
+     * @return 服务实例
+     */
+    <T> T getRemoteService(ServiceMetaInfo metaInfo, Class<T> clazz) throws InterruptedException, TimeoutException;
+
+    /**
      * 注册RPC服务
      *
      * @param serviceSign 服务签名
