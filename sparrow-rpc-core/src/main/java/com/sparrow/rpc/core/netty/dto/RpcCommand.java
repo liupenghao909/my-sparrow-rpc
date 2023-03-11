@@ -8,6 +8,9 @@ package com.sparrow.rpc.core.netty.dto;
  **/
 public class RpcCommand {
     RpcHeader header;
+    /**
+     * 通过自定义序列化方式序列化好的RpcRequest信息
+     */
     byte[] data;
 
     public RpcHeader getHeader() {

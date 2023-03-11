@@ -3,6 +3,7 @@ package com.sparrow.rpc.namesrv.dto;
 import java.net.URI;
 
 /**
+ * 服务注册的元信息类，用来存储服务信息
  * @author chengwei_shen
  * @date 2022/7/20 13:53
  **/

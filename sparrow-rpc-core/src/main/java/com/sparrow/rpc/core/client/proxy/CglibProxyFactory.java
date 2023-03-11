@@ -4,6 +4,9 @@ import com.sparrow.rpc.api.ServiceMetaInfo;
 import com.sparrow.rpc.core.RpcTransport;
 import com.sparrow.rpc.core.client.ProxyFactory;
 
+/**
+ * 代理工厂类
+ */
 public class CglibProxyFactory implements ProxyFactory {
     RpcTransport rpcTransport;
 

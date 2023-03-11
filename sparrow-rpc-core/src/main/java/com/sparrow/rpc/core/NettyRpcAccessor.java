@@ -15,8 +15,12 @@ import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
 /**
+ * RPC访问类
  * Accessor的主要功能在于对外提供统一的API去访问RPC核心相关的方法，控制权限收口，
  * 然后像SPI的配置机制也可以统一放在该模块下使用
+ *
+ * 为了将NameServer以及其他Rpc内部功能性方法与具体使用者解耦，我们创建一个RpcAccessor接口，
+ * 把Rpc服务相关的方法收敛到一起
  *
  * @author chengwei_shen
  * @date 2022/7/13 15:59
@@ -41,16 +45,26 @@ public class NettyRpcAccessor implements RpcAccessor {
         return proxyFactory.createProxy(clazz, metaInfo);
     }
 
+    /**
+     * 服务注册
+     * @param serviceSign 服务签名
+     * @param service     服务实例
+     * @param clazz       服务接口类
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> URI addRpcService(String serviceSign, T service, Class<T> clazz) {
         //服务实例注册
         ServiceHub.getInstance().addService(serviceSign, service);
-        //服务URI注册
+        //服务URI注册 服务类
         NameService nameService = SpiSupport.load(NameService.class);
+        // 获取本地uri
         URI localUri = getLocalUri();
         if (Objects.isNull(localUri)) {
             throw new IllegalStateException("Get local uri fail");
         }
+        // 服务URI注册
         nameService.registerServer(serviceSign, localUri);
         return null;
     }

@@ -10,11 +10,18 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 为了序列化有一个统一出口，我们实现一个SerializeSupport支持类，对外提供一致序列化方式
  * @author chengwei_shen
  * @date 2022/7/15 14:39
  **/
 public class SerializeSupport {
+    /**
+     * 序列化器类型和序列化器的映射关系
+     */
     private static Map<Byte, Serializer<?>> typeSerializerMap = new ConcurrentHashMap<>();
+    /**
+     * 被序列化对象类型和序列化器的映射关系
+     */
     private static Map<Class<?>, Serializer<?>> classSerializerMap = new ConcurrentHashMap<>();
 
     static {
@@ -38,9 +45,11 @@ public class SerializeSupport {
         if (Objects.isNull(serializer)) {
             throw new IllegalArgumentException(String.format("Cannot find correct serializer for class:%s", t.getClass()));
         }
+        // +1 目的：在序列后的结果 字节数组的第一位放一个Byte类型的值表示序列化类型
         ByteBuffer buffer = ByteBuffer.allocate(serializer.getSize(t) + 1);
         //先放上类型
         buffer.put(serializer.getType());
+        // 返回序列化后的内容
         return serializer.serialize(t, buffer);
     }
 
@@ -71,8 +80,9 @@ public class SerializeSupport {
      */
     public static <E> E parse(byte[] bytes) {
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        //先取出类型
+        //先取出序列化类型
         byte type = buffer.get();
+        // 根据序列化类型找到序列化器
         Serializer<?> serializer = typeSerializerMap.get(type);
         if (Objects.isNull(serializer)) {
             throw new IllegalArgumentException(String.format("Unknown type:%s", type));

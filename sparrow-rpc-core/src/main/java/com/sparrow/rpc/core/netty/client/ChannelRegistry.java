@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2022/7/14 11:52
  **/
 public class ChannelRegistry {
+    // 地址和channel的映射关系
     private Map<String, Channel> channelMap = new ConcurrentHashMap<>();
     private static ChannelRegistry INSTANCE;
 

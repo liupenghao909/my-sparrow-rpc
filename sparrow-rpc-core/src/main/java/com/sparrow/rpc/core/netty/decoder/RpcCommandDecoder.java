@@ -15,11 +15,19 @@ import java.util.List;
  * @date 2022/9/17 13:23
  */
 public class RpcCommandDecoder extends ByteToMessageDecoder {
+    /**
+     * 将传输的序列化信息，反序列化得到请求对象
+     * @param channelHandlerContext
+     * @param byteBuf
+     * @param list
+     * @throws Exception
+     */
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
         int len = byteBuf.readInt();
         byte[] bytes = new byte[len];
         byteBuf.readBytes(bytes);
+        // 反编译得到请求头
         RpcHeader header = deHeader(bytes);
         len = byteBuf.readInt();
         bytes = new byte[len];

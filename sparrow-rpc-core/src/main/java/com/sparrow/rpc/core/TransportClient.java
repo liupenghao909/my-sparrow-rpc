@@ -5,6 +5,8 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.TimeoutException;
 
 /**
+ * 负责创建RpcTransport目的也是为了利用SPI可拔插，
+ * 客户端可以通过TransportClient创建想要的RpcTransport
  * @author chengwei_shen
  * @date 2022/7/13 16:31
  **/

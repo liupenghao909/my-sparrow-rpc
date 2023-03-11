@@ -30,7 +30,7 @@ public class HessianSerializer implements Serializer<Object> {
             out.flush();
             return outputStream.toByteArray();
         } catch (Exception e) {
-            throw new SecurityException("serializer error");
+            throw new SerializeException("serializer error");
         }
     }
 

@@ -1,0 +1,10 @@
+# 一个正常的RpcCommand的发送路径
+1. 客户端调用NettyClient的createTransport方法创建NettyTransport
+2. 组装好RpcCommand后调用NettyTransport的send方法，
+   send方法将请求写入建立好连接的channel中返回一个future，并将future暂存到PendingRequest中
+3. 客户端拿到future后调用future.get 方法阻塞等待数据到来
+4. RpcCommand来到NettyServer的ChannelPipeline流转，经过反序列化以及RpcRequestHandler
+   的处理后，拿到远端服务对应方法的结果，组装成RpcResponse，写到channel中返回给客户端
+5. 客户端拿到Response后经过反序列化后从PendingRequest拿到对应future，调用complete
+   方法完成这个future
+6. 被future阻塞的线程拿到结果，做自定义处理

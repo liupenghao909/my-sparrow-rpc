@@ -7,6 +7,7 @@ import java.net.URI;
 import java.util.concurrent.TimeoutException;
 
 /**
+ * 然后为了将NameServer以及其他Rpc内部功能性方法与具体使用者解耦，我们创建一个RpcAccessor接口，把Rpc服务相关的方法收敛到一起
  * @author chengwei_shen
  * @date 2022/7/13 14:59
  **/

@@ -27,9 +27,11 @@ public class RpcResponseHandler extends SimpleChannelInboundHandler<RpcResponse>
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcResponse rpcResponse) throws Exception {
         String type = rpcResponse.getHeader().getType();
+        // 如果是心跳检测消息
         if (CommandTypes.RPC_HEARTBEAT_RESPONSE.getType().equals(type)) {
             log.info("HeartBeat [{}]", rpcResponse.getData());
         } else if (CommandTypes.RPC_RESPONSE.getType().equals(type)) {
+            // 从PendingRequests中根据traceID获取尚未收到响应的请求
             CompletableFuture<RpcResponse> rspFuture = PendingRequests.getInstance().remove(rpcResponse.getHeader().getTraceId());
             //通过complete将reponse返回给对应future的get阻塞线程
             rspFuture.complete(rpcResponse);
@@ -47,6 +49,7 @@ public class RpcResponseHandler extends SimpleChannelInboundHandler<RpcResponse>
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;
+            // 如果是写空闲往channel中发送心跳上报的请求
             if (event.state() == IdleState.WRITER_IDLE) {
                 log.info("Idle send to [{}]", ctx.channel().remoteAddress());
                 RpcCommand rpcCommand = new RpcCommand();

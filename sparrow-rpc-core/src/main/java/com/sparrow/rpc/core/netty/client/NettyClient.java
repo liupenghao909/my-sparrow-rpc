@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
+ * Netty客户端
  * @author chengwei_shen
  * @date 2022/7/14 10:50
  **/
@@ -43,14 +44,28 @@ public class NettyClient implements TransportClient {
         return new NettyTransport(createChannel(address, connectionTimeout));
     }
 
+    /**
+     * 创建channel
+     * @param address 地址
+     * @param connectionTimeout 连接超时时间
+     * @return
+     * @throws InterruptedException
+     * @throws TimeoutException
+     */
     public Channel createChannel(InetSocketAddress address, long connectionTimeout) throws InterruptedException, TimeoutException {
         if (Objects.isNull(address)) {
             throw new IllegalArgumentException("Address can not be null");
         }
+        // 根据地址从channel注册中心获取channel，重复利用
         Channel channel = ChannelRegistry.getInstance().get(address);
         if (Objects.nonNull(channel)) {
             return channel;
         }
+        /*
+        ChannelFuture
+            Netty中对于Channel的IO都是异步的，都会返回ChannelFuture对象并可以通过addListener方法给
+            这个IO操作注册一个ChannelFutureListener用于事件IO回调
+         */
         ChannelFuture channelFuture = bootstrap.connect(address);
         if (!channelFuture.await(connectionTimeout)) {
             throw new TimeoutException();
@@ -66,7 +81,10 @@ public class NettyClient implements TransportClient {
 
     private Bootstrap buildBoostrap(EventLoopGroup ioEventGroup, ChannelHandler channelHandler) {
         Bootstrap bootstrap = new Bootstrap();
-        bootstrap.channel(Epoll.isAvailable() ? EpollSocketChannel.class : NioSocketChannel.class).group(ioEventGroup).handler(channelHandler).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
+        bootstrap.channel(Epoll.isAvailable() ? EpollSocketChannel.class : NioSocketChannel.class)
+                .group(ioEventGroup)
+                .handler(channelHandler)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
         return bootstrap;
     }
 

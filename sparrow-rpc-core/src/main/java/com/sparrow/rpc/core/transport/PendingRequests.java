@@ -15,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2022/7/13 20:36
  **/
 public class PendingRequests {
+    // traceId 和 RPC响应CompletableFuture 的映射关系
+    // 存放尚未收到响应的请求
     private static final Map<String, CompletableFuture<RpcResponse>> PENDING_REQUESTS = new ConcurrentHashMap<>();
     private static PendingRequests INSTANCE;
 

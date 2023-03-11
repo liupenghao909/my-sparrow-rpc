@@ -18,6 +18,10 @@ import java.lang.reflect.Method;
 import java.util.UUID;
 
 /**
+ * Rpc代理类
+ * 是我们创建代理、发送Rpc请求的重要实现类
+ * Cglib代理需要实现MethodInterceptor，这样每次调用这个代理类中的方法就会被拦截到MethodInterceptor的intercept方法
+ * 重点也就是实现intercept方法
  * @author chengweishen
  * @date 2022/7/17 11:13
  */
@@ -27,6 +31,12 @@ public class CglibRpcProxy implements MethodInterceptor {
 
     private RpcTransport rpcTransport;
 
+    /**
+     * 构造函数
+     * @param clz 代理目标的Class
+     * @param metaInfo 远程服务元信息（告诉服务端我调用的是哪个服务）
+     * @param rpcTransport rpc传输类，主要负责发送请求
+     */
     public CglibRpcProxy(Class clz, ServiceMetaInfo metaInfo, RpcTransport rpcTransport) {
         this.clazz = clz;
         this.metaInfo = metaInfo;
@@ -48,6 +58,7 @@ public class CglibRpcProxy implements MethodInterceptor {
     @Override
     public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) {
         RpcRequest rpcRequest = new RpcRequest();
+        // 放入调用服务信息
         rpcRequest.setNameSpace(metaInfo.getNameSpace());
         rpcRequest.setServiceName(metaInfo.getServiceName());
         rpcRequest.setMethodName(method.getName());

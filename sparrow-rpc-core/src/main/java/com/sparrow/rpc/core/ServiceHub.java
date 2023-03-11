@@ -5,8 +5,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 服务实例注册中心
- *
+ * 服务实例注册中心，一个服务签名与具体服务类的对应关系
  * @author chengweishen
  * @date 2022/7/17 21:31
  */

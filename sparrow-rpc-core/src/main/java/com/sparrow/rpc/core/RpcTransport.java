@@ -6,6 +6,7 @@ import com.sparrow.rpc.core.netty.dto.RpcResponse;
 import java.util.concurrent.CompletableFuture;
 
 /**
+ * 主要负责提供发送请求的功能
  * @author chengwei_shen
  * @date 2022/7/13 17:18
  **/

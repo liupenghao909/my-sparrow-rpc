@@ -25,7 +25,8 @@ import java.util.Objects;
  * @date 2022/7/14 11:44
  **/
 @Slf4j
-//这个表示这个handler在每个channel中进行共享，可参考https://learn.lianglianglee.com/%E4%B8%93%E6%A0%8F/Netty%20%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90%E4%B8%8E%20RPC%20%E5%AE%9E%E8%B7%B5-%E5%AE%8C/30%20%20%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93%EF%BC%9ANetty%20%E5%9C%A8%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.md
+//这个表示这个handler在每个channel中进行共享，可参考
+// https://learn.lianglianglee.com/%E4%B8%93%E6%A0%8F/Netty%20%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90%E4%B8%8E%20RPC%20%E5%AE%9E%E8%B7%B5-%E5%AE%8C/30%20%20%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93%EF%BC%9ANetty%20%E5%9C%A8%E9%A1%B9%E7%9B%AE%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5.md
 @ChannelHandler.Sharable
 public class RpcRequestHandler extends SimpleChannelInboundHandler<RpcCommand> {
     /**
@@ -47,10 +48,17 @@ public class RpcRequestHandler extends SimpleChannelInboundHandler<RpcCommand> {
         });
     }
 
+    /**
+     * 心跳检测中对应空闲事件发生后触发执行处置动作
+     * @param ctx
+     * @param evt
+     * @throws Exception
+     */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
             IdleState state = ((IdleStateEvent) evt).state();
+            // 如果是读空闲，因为这是请求的处理方法中，所以关注读空闲
             if (state == IdleState.READER_IDLE) {
                 log.info("Idle state error,prepare to close");
                 ctx.close();
@@ -69,8 +77,11 @@ public class RpcRequestHandler extends SimpleChannelInboundHandler<RpcCommand> {
         } else {
             //指定用jdk序列化方式
             response.getHeader().setType(CommandTypes.RPC_RESPONSE.getType());
+            // 将请求体反序列化为RpcRequest对象
             RpcRequest rpcRequest = SerializeSupport.parse(command.getData());
+            // 反序列化请求方法的参数为Java对象
             Object[] args = SerializeSupport.parse(rpcRequest.getParameters());
+            // 找到Service中注册的服务
             Object service = ServiceHub.getInstance().getService(rpcRequest.buildServiceSign());
             if (Objects.isNull(service)) {
                 response.setCode(RspCode.UNKNOWN_SERVICE.getCode());
@@ -83,8 +94,11 @@ public class RpcRequestHandler extends SimpleChannelInboundHandler<RpcCommand> {
                 for (int i = 0; i < args.length; i++) {
                     argClass[i] = args[i].getClass();
                 }
+                // 根据方法名和方法参数得到方法
                 Method method = service.getClass().getMethod(rpcRequest.getMethodName(), argClass);
+                // 通过反射调用方法
                 Object ans = method.invoke(service, args);
+                // 设置响应体
                 response.setData(ans);
                 response.setCode(RspCode.SUCCESS.getCode());
             } catch (Exception e) {
